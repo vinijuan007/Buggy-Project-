@@ -1,7 +1,7 @@
 #include "mbed.h"
 
-class Motor { 
-protected:
+class Motor{ 
+private:
    DigitalOut direction;// direction of rotation
    DigitalOut polar_mode;//Bipolar or Unipolar mode
    PwmOut pwm;
@@ -9,7 +9,7 @@ protected:
    float duty_cycle; // number between 0.0f - 1.0f
    
 public:
-   Motor(PinName d,PinName pm, PinName p)
+   Motor (PinName d,PinName pm, PinName p)
    : direction(d), polar_mode(pm), pwm(p){
        polar_mode = 1;// 1 for bipolar 0 for unipolar (check info)
        period = 100;
@@ -42,11 +42,11 @@ public:
     
 };
 
-int main(){
-    Motor* Right_Motor = new Motor(D1,D2,D3);
-    Motor* Left_Motor = new Motor(D4,D5,D6);
-    Movement Move_Buggy(Right_Motor, Left_Motor);
-     while (1) {};
-      
-} 
+// main() runs in its own thread in the OS
+int main()
+{
+    while (true) {
+
+    }
+}
 
