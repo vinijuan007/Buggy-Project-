@@ -1,15 +1,17 @@
 #include "mbed.h"
 
-
-class Motor{
+class { 
 protected:
-   DigitalOut direction;
+   DigitalOut direction;// direction of rotation
+   DigitalOut polar_mode;//Bipolar or Unipolar mode
    PwmOut pwm;
    int period; // period in milli seconds of the pwm signal 
    float duty_cycle; // number between 0.0f - 1.0f
    
 public:
-   Motor(PinName d,PinName p) : direction(d), pwm(p){
+   Motor(PinName d,PinName pm, PinName p)
+   : direction(d), polar_mode(pm), pwm(p){
+       polar_mode = 1;// 1 for bipolar 0 for unipolar (check info)
        period = 100;
        pwm.period_ms(period);//setting the period 
    }
@@ -41,9 +43,9 @@ public:
 };
 
 int main(){
-    Motor* Right_Motor = new Motor(D1,D2);
-    Motor* Left_Motor = new Motor(D3,D4);
-    Movement Move_Buggy(PL , CC, 0.0, 3.3, 1, 10);
+    Motor* Right_Motor = new Motor(D1,D2,D3);
+    Motor* Left_Motor = new Motor(D4,D5),D6;
+    Movement Move_Buggy(Right_Motor, Left_Motor);
      while (1) {};
       
 } 
