@@ -28,12 +28,20 @@ Speed_Control(QEI* r, QEI* l): REncoder(r), LEncoder(l){
     sum_of_pulsesA = 0;
     REncoder->reset();
     LEncoder->reset();
+    duty_cycleA = 0.686;
+    duty_cycleB = 0.7;
     time = 0.5;
-    duty_cycleA = 0.586;
-    duty_cycleB = 0.6;
     Buggy_Motors.set_duty_cycleA(duty_cycleA);
     Buggy_Motors.set_duty_cycleB(duty_cycleB);
-    tkr.attach(callback(this , &Speed_Control::Move_foward ), time);
+    tkr.attach(callback(this , &Speed_Control::Speed_Print ), time);
+}
+
+
+void calculate_distance(void){
+    sum_of_pulsesA = sum_of_pulsesA + (float (REncoder->getPulses()));
+    distanceA = abs(sum_of_pulsesA) * 3.141 * 0.08 / 1024;
+    lcd.locate(0,20);
+    lcd.printf("%.4f ",distanceA );
 }
 
 void calculate_speed(void){
@@ -47,13 +55,6 @@ void calculate_speed(void){
     LEncoder->reset();
 }
 
-void calculate_distance(void){
-
-    sum_of_pulsesA = sum_of_pulsesA + (float (REncoder->getPulses()));
-    distanceA = sum_of_pulsesA * 3.141 * 0.08 / 1024;
-    lcd.locate(0,20);
-    lcd.printf("%.4f ",distanceA );
-}
 
 void printRM(void){
     lcd.locate(0,2);
@@ -97,16 +98,28 @@ void control_speedR(void){
     }
 }
 
-void Move_foward(void){
+
+void Speed_Print(void){
     calculate_distance();
     calculate_speed();
-   // control_speedR();
     printLM();
     printRM();
+    Move_foward();
     }
 
-
-
+void Move_foward(void){
+    if(distanceA <= 1){
+    duty_cycleA = 0.686;
+    duty_cycleB = 0.7;
+    }
+    else{
+    Buggy_Motors.set_duty_cycleA(0.5);
+    Buggy_Motors.set_duty_cycleB(0.5);
+    distanceA = 0;
+    sum_of_pulsesA = 0;
+    
+    }
+}
 
 };
 
@@ -116,6 +129,10 @@ int main(){
     QEI* Right_Encoder = new QEI(PB_15,PB_14, NC, 1024, QEI::X4_ENCODING);
     QEI* Left_Encoder = new QEI(PC_8,PC_6, NC, 1024 , QEI::X4_ENCODING);
     Speed_Control Speed_of_buggy(Right_Encoder, Left_Encoder);
-     while (1) {};
+    
+     while (1) {
+    //Speed_of_buggy.Move_foward();
+      //wait(0.4);
+      }
       
 } 
